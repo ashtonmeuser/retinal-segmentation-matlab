@@ -1,9 +1,9 @@
-function [output] = lineScore(neighborhood, kSize)
+function [output] = lineScore(neighborhood, kSize, resolution)
 % Assign score to neighborhood based on best fitting line
 
-persistent a; % Line masks
-if isempty(a) % Expensive, inititialize once
-    a = []; % Debug
+persistent lineMasks;
+if isempty(lineMasks) % Expensive, inititialize once
+    lineMasks = generateMaskArray(kSize, resolution);
 end
 
 mask = zeros(kSize, kSize, 'uint8');
