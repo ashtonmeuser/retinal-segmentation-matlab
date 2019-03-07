@@ -1,5 +1,10 @@
 function [output] = lineScore(neighborhood, kSize)
-%SPATIAL Pad image with border of size ksize with value of value
+% Assign score to neighborhood based on best fitting line
+
+persistent a; % Line masks
+if isempty(a) % Expensive, inititialize once
+    a = []; % Debug
+end
 
 mask = zeros(kSize, kSize, 'uint8');
 center = (kSize - 1) / 2 + 1;

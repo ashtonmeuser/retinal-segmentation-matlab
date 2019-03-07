@@ -1,5 +1,5 @@
 function [output] = convolve(image, kSize, func)
-%SPATIAL Covolve image with neighborhood size kSize*kSize applying func
+% Convolve image with neighborhood size kSize*kSize applying func
 
 size([0 0 0; 0 0 0])
 [h, w] = size(image);
