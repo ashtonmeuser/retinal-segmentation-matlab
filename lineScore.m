@@ -7,7 +7,7 @@ if isempty(a) % Expensive, inititialize once
 end
 
 mask = zeros(kSize, kSize, 'uint8');
-center = (kSize - 1) / 2 + 1;
+center = ceil(kSize / 2);
 mask(:, center) = 1;
 neighborhood = neighborhood .* mask;
 average = mean2(neighborhood);
