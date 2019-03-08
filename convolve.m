@@ -9,7 +9,7 @@ output = zeros(h, w, 'uint8');
 for y = padSize + 1:h + padSize
     for x = padSize + 1:w + padSize
         neighborhood = image(y - padSize:y + padSize, x - padSize:x + padSize);
-        output(y - padSize, x - padSize) = lineScore(neighborhood, kSize);
+        output(y - padSize, x - padSize) = func(neighborhood);
     end
 end
 

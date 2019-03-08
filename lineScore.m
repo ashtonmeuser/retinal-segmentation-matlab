@@ -1,16 +1,17 @@
-function [output] = lineScore(neighborhood, kSize, resolution)
+function [output] = lineScore(neighborhood, lineMasks)
 % Assign score to neighborhood based on best fitting line
 
-persistent lineMasks;
-if isempty(lineMasks) % Expensive, inititialize once
-    lineMasks = generateMaskArray(kSize, resolution);
+steps = size(lineMasks, 3);
+scores = zeros(steps, 1, 'uint8');
+kSize = size(lineMasks, 1);
+
+for index = 1:steps
+    masked = neighborhood .* lineMasks(:, :, index);
+    neighborhoodAverage = mean2(neighborhood);
+    lineAverage = sum(masked(:)) / kSize;
+    scores(index) = lineAverage - neighborhoodAverage;
 end
 
-mask = zeros(kSize, kSize, 'uint8');
-center = ceil(kSize / 2);
-mask(:, center) = 1;
-neighborhood = neighborhood .* mask;
-average = mean2(neighborhood);
-output = average * kSize - average; % Account for zero pixels
+output = max(scores);
 
 end
