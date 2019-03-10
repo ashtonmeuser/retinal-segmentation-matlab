@@ -1,6 +1,10 @@
 function [output] = generateMaskArray(kSize, resolution)
 % Create array of kSize * kSize masks by from resolution in degrees
 
+if (mod(kSize, 2) == 0)
+    error('Neighborhood kSize should be an odd number')
+end
+
 steps = floor(180 / resolution);
 output = zeros(kSize, kSize, steps, 'uint8');
 for index = 1:steps
