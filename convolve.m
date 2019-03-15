@@ -1,7 +1,7 @@
 function [output] = convolve(image, kSize, func)
 % Convolve image with neighborhood size kSize*kSize applying func
 
-[h w] = size(image);
+[h, w] = size(image);
 padSize = floor(kSize / 2);
 image = pad(image, padSize, 255);
 output = zeros(h, w, 'uint8');

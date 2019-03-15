@@ -11,7 +11,7 @@ inverseGreen = imcomplement(original(:, :, 2));
 masked = inverseGreen .* uint8(fovMask);
 lineMasks = generateMaskArray(kSize, resolution);
 func = @(n) lineScore(n, lineMasks); % Anonymous fn called by convolution
-result = convolve(inverseGreen, kSize, func);
+result = convolve(masked, kSize, func);
 inverseResult = imcomplement(result);
 
-montage([inverseGreen result inverseResult]);
+montage([masked result inverseResult]);
