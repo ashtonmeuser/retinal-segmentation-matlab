@@ -42,3 +42,10 @@ B = A .* I;
 figure;
 montage({S*255, S0*255, I, groundTruth, A, B}, 'Size', [2 3]);
 title(['Using kSize = ', num2str(kSize), ' and resolution = ', num2str(resolution), ' degrees']); 
+
+diff1 = (B/255)-(groundTruth/255);
+diff2 = (groundTruth/255)-(B/255);
+diff = diff1+diff2; % finding how many pixels are misclassified
+figure, imshow(diff*255); % show the difference
+accuracy =((584*565)-sum(diff, 'all'))/(584*565)*100;
+title(['Misclassified pixels, groundtruth accuracy =', num2str(accuracy)]);
