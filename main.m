@@ -2,8 +2,8 @@
 
 resolution = 15; % Line detector resolution in degrees
 kSize = 15; % Kernel size
-originalFilename = '01_test.tif'; % Original image file path
-fovMaskFilename = '01_test_mask.gif'; % Image mask file path
+originalFilename = 'DRIVE/01_test.tif'; % Original image file path
+fovMaskFilename = 'DRIVE/01_test_mask.gif'; % Image mask file path
 
 original = imread(originalFilename);
 fovMask = logical(imread(fovMaskFilename));
