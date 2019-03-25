@@ -12,7 +12,7 @@ output3 = zeros(kSize, kSize, steps, 'uint8');
 
 for index = 1:steps
     [output1(:, :, index),output2(:, :, index)] = generateLineMasks(kSize, resolution * (index - 1));
-    output3(round(kSize/2), round(kSize/2), index) = 1;
 end
+    output3(round(kSize/2), round(kSize/2)) = 1;
 
 end

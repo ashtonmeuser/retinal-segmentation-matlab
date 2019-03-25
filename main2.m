@@ -9,10 +9,10 @@ mask = imread(maskImage);
 greenImage = original(:, :, 2);
 inverseGreen = imcomplement(greenImage);
 
-[lineMasks, orthogMasks, origMasks] = generateMaskArrays(kSize, resolution); % create the line kernels
+[lineMasks, orthogMasks] = generateMaskArrays(kSize, resolution); % create the line kernels
 %func1 = @(n) lineScore(n, lineMasks); % Anonymous fn called by convolution
-func2 = @(n) vectorScore(n, lineMasks, orthogMasks, origMasks);
-result2 = convolve3(inverseGreen, kSize, func2);
+func2 = @(m,n) vectorScore(m, n, lineMasks, orthogMasks);
+result2 = convolve3(inverseGreen, mask, kSize, func2);
 
 figure, montage([result2(:,:,1), result2(:,:,2), result2(:,:,3)]);
 title('Resulting vector images');
@@ -38,7 +38,7 @@ S0 = result3(:,:,2)*255; % the 3pxl orthogonal LineScore
 I = result3(:,:,3)*255; % the greyscale Score
 
 groundTruth = imread('01_manual1.gif')*255;
-I = imcomplement(I);
+
 A = S .* S0;
 B = A .* I;
 figure;

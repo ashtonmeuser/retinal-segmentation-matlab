@@ -6,7 +6,7 @@ scores = zeros(steps, 1, 'uint8');
 kSize = size(lineMasks, 1);
 
 for index = 1:steps
-    masked = neighborhood .* uint8(lineMasks(:, :, index));
+    masked = neighborhood .* lineMasks(:, :, index);
     neighborhoodAverage = mean2(neighborhood);
     lineAverage = sum(masked(:)) / kSize;
     scores(index) = lineAverage - neighborhoodAverage;

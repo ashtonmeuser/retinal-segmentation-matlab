@@ -6,7 +6,7 @@ if (mod(kSize, 2) == 0)
 end
 
 steps = floor(180 / resolution);
-output = zeros(kSize, kSize, steps, 'logical');
+output = zeros(kSize, kSize, steps, 'uint8');
 for index = 1:steps
     output(:, :, index) = lineMask(kSize, resolution * (index - 1));
 end

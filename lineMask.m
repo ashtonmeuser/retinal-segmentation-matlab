@@ -4,7 +4,7 @@ function [output] = lineMask(kSize, angle)
 angle = mod(angle, 180); % Repeats after 180 degrees
 acute = mod(angle, 90);
 quarterSize = ceil(kSize / 2);
-quarter = zeros(quarterSize, quarterSize, 'logical');
+quarter = zeros(quarterSize, quarterSize, 'uint8');
 diagonalDifference = abs(45 - acute);
 rise = tand(45 - diagonalDifference);
 
@@ -13,7 +13,7 @@ for x = 0:quarterSize - 1
     quarter(quarterSize - round(rise * x), x + 1) = 1;
 end
 
-output = zeros(kSize, kSize, 'logical');
+output = zeros(kSize, kSize);
 output(1:quarterSize, quarterSize:kSize) = quarter; % Q1
 output(quarterSize:kSize, 1:quarterSize) = rot90(quarter, 2); % Q3
 
