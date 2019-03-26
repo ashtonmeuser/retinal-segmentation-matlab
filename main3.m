@@ -36,8 +36,8 @@ S = result2(:,:,1); % the 'kSize' LineScore
 S0 = result2(:,:,2); % the 3pxl orthogonal LineScore
 I = result2(:,:,3); % the greyscale Score  
     
-A = S .* S0;
-B = A .* I;
+A = S + S0; % add the scores together
+B = A + I;
 
 [h, w] = size(B);
 TP = zeros(maxThreshold+1,1);
@@ -66,5 +66,8 @@ xlabel('False Positive Rate');
 ylabel('True Positive Rate');
 
 figure;
-montage({S, S0, I, B, segmentedImages(:,:,2), groundTruth}, 'Size', [2 3]);
+montage(segmentedImages);
+title('Segmented Images using Incremental Threshold Values')
+figure;
+montage({S, S0, I, A, B, groundTruth}, 'Size', [2 3]);
 title(['Using kSize = ', num2str(kSize), ' and resolution = ', num2str(resolution), ' degrees']); 
