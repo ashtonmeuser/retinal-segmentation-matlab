@@ -29,7 +29,11 @@ FOVneighborhoodAverage = FOVneighborhoodAverage/FOVpixelcount;
 for y = 1:h
     for x = 1:w
         if(FOVneighborhood(y,x) == 0 ) % if its not in FOV
-            neighborhood(y,x) = FOVneighborhoodAverage; %replace with average value in FOV
+            if(FOVneighborhoodAverage > 75)
+                neighborhood(y,x) = 0;
+            else
+                neighborhood(y,x) = FOVneighborhoodAverage; %replace with average value in FOV
+            end
         end
     end
 end

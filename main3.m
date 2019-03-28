@@ -1,11 +1,12 @@
-maxThreshold = 100;
+clear;
+
+maxThreshold = 255;
 resolution = 15; % Line detector resolution in degrees
 kSize = 15; % Kernel size
 
-lineWeight = 5; % Featurevector weightings
-orthogWeight = 3; 
-origWeight = 0.1;
-vectorOffset = 0; % plus offset
+lineWeight = 16; % Featurevector weightings
+orthogWeight = 6; 
+origWeight = 20;
 
 filename = '01_test.tif'; % Original image file path
 maskImage = '01_test_mask.gif'; % FOV mask image file path
@@ -33,16 +34,17 @@ SDOrthogScore = std2(result1(:,:,2));
 meanOrigScore = mean2(result1(:,:,3));
 SDOrigScore = std2(result1(:,:,3));
 
-result2(:,:,1) = ((result1(:,:,1) - meanLineScore) .* (1/SDLineScore));
-result2(:,:,2) = ((result1(:,:,2) - meanOrthogScore) .* (1/SDOrthogScore));
-result2(:,:,3) = (result1(:,:,3)); % - meanOrigScore) .* (1/SDOrigScore);
+result2(:,:,1) = (double(result1(:,:,1)) - meanLineScore) .* (1/SDLineScore);
+result2(:,:,2) = (double(result1(:,:,2)) - meanOrthogScore) .* (1/SDOrthogScore);
+result2(:,:,3) = (double(result1(:,:,3))  - meanOrigScore) .* (1/SDOrigScore);
+result2(result2 < 0) = 0; % adjust for negative results
 
 S = result2(:,:,1); % the 'kSize' LineScore
 S0 = result2(:,:,2); % the 3pxl orthogonal LineScore
 I = result2(:,:,3); % the greyscale Score  
     
 A = S.*lineWeight + S0.*orthogWeight; % add the scores together with the vector weightings
-B = A + (I.*origWeight) + vectorOffset;
+B = A + (I.*origWeight);
 
 [h, w] = size(B);
 TP = zeros(maxThreshold+1,1);
@@ -72,5 +74,5 @@ ylabel('True Positive Rate');
 
 figure, montage({segmentedImages(:,:,23),segmentedImages(:,:,24),segmentedImages(:,:,25),segmentedImages(:,:,26),groundTruth}, 'Size', [2 3]);
 title('Threshold 23, 24, 25, 26 and the Ground Truth');
-figure, montage({histeq(S), histeq(S0), histeq(I), histeq(A), histeq(B), groundTruth}, 'Size', [2 3]);
+figure, montage({S, S0, I, A, B, groundTruth}, 'Size', [2 3]);
 title(['Using kSize = ', num2str(kSize), ' and resolution = ', num2str(resolution), ' degrees']); 
