@@ -1,6 +1,11 @@
-maxThreshold = 15;
+maxThreshold = 100;
 resolution = 15; % Line detector resolution in degrees
 kSize = 15; % Kernel size
+
+lineWeight = 5; % Featurevector weightings
+orthogWeight = 3; 
+origWeight = 0.1;
+vectorOffset = 0; % plus offset
 
 filename = '01_test.tif'; % Original image file path
 maskImage = '01_test_mask.gif'; % FOV mask image file path
@@ -16,8 +21,8 @@ inverseGreen = imcomplement(greenImage);
 func2 = @(m,n) vectorScore(m, n, lineMasks, orthogMasks);
 result1 = convolve3(inverseGreen, FOVmask, kSize, func2);
 
-figure, montage([result1(:,:,1), result1(:,:,2), result1(:,:,3)]);
-title('Resulting vector images');
+figure, montage([histeq(result1(:,:,1)), histeq(result1(:,:,2)), histeq(result1(:,:,3))]);
+title('Resulting vector images after histogram equalization');
 
 meanLineScore = mean2(result1(:,:,1));
 SDLineScore = std2(result1(:,:,1));
@@ -28,16 +33,16 @@ SDOrthogScore = std2(result1(:,:,2));
 meanOrigScore = mean2(result1(:,:,3));
 SDOrigScore = std2(result1(:,:,3));
 
-result2(:,:,1) = (result1(:,:,1) - meanLineScore) .* (1/SDLineScore);
-result2(:,:,2) = (result1(:,:,2) - meanOrthogScore) .* (1/SDOrthogScore);
-result2(:,:,3) = (result1(:,:,3) - meanOrigScore) .* (1/SDOrigScore);
+result2(:,:,1) = ((result1(:,:,1) - meanLineScore) .* (1/SDLineScore));
+result2(:,:,2) = ((result1(:,:,2) - meanOrthogScore) .* (1/SDOrthogScore));
+result2(:,:,3) = (result1(:,:,3)); % - meanOrigScore) .* (1/SDOrigScore);
 
 S = result2(:,:,1); % the 'kSize' LineScore
 S0 = result2(:,:,2); % the 3pxl orthogonal LineScore
 I = result2(:,:,3); % the greyscale Score  
     
-A = S + S0; % add the scores together
-B = A + I;
+A = S.*lineWeight + S0.*orthogWeight; % add the scores together with the vector weightings
+B = A + (I.*origWeight) + vectorOffset;
 
 [h, w] = size(B);
 TP = zeros(maxThreshold+1,1);
@@ -65,9 +70,7 @@ title('ROC curve');
 xlabel('False Positive Rate');
 ylabel('True Positive Rate');
 
-figure;
-montage(segmentedImages);
-title('Segmented Images using Incremental Threshold Values')
-figure;
-montage({S, S0, I, A, B, groundTruth}, 'Size', [2 3]);
+figure, montage({segmentedImages(:,:,23),segmentedImages(:,:,24),segmentedImages(:,:,25),segmentedImages(:,:,26),groundTruth}, 'Size', [2 3]);
+title('Threshold 23, 24, 25, 26 and the Ground Truth');
+figure, montage({histeq(S), histeq(S0), histeq(I), histeq(A), histeq(B), groundTruth}, 'Size', [2 3]);
 title(['Using kSize = ', num2str(kSize), ' and resolution = ', num2str(resolution), ' degrees']); 
