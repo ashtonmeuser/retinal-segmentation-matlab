@@ -1,12 +1,12 @@
 clear;
 
-maxThreshold = 255;
+maxThreshold = 30;
 resolution = 15; % Line detector resolution in degrees
 kSize = 15; % Kernel size
 
-lineWeight = 16; % Featurevector weightings
-orthogWeight = 6; 
-origWeight = 20;
+lineWeight = 10; % Featurevector weightings
+orthogWeight = 5; 
+origWeight = 10;
 
 filename = '01_test.tif'; % Original image file path
 maskImage = '01_test_mask.gif'; % FOV mask image file path
@@ -22,7 +22,7 @@ inverseGreen = imcomplement(greenImage);
 func2 = @(m,n) vectorScore(m, n, lineMasks, orthogMasks);
 result1 = convolve3(inverseGreen, FOVmask, kSize, func2);
 
-figure, montage([histeq(result1(:,:,1)), histeq(result1(:,:,2)), histeq(result1(:,:,3))]);
+figure, montage([histeq(result1(:,:,1)), histeq(result1(:,:,2)), (result1(:,:,3))]);
 title('Resulting vector images after histogram equalization');
 
 meanLineScore = mean2(result1(:,:,1));
@@ -47,15 +47,12 @@ A = S.*lineWeight + S0.*orthogWeight; % add the scores together with the vector 
 B = A + (I.*origWeight);
 
 [h, w] = size(B);
-TP = zeros(maxThreshold+1,1);
-FP = zeros(maxThreshold+1,1);
-TN = zeros(maxThreshold+1,1);
-FN = zeros(maxThreshold+1,1);
-TPrate = zeros(maxThreshold+1,1);
-FPrate = zeros(maxThreshold+1,1);
-segmentedImages = uint8(zeros([size(inverseGreen),maxThreshold+1]));
+
+TPrate = zeros((maxThreshold*2)+1,1);
+FPrate = zeros((maxThreshold*2)+1,1);
+segmentedImages = uint8(zeros([size(inverseGreen),(maxThreshold*10)+1]));
 % 
- for threshold=0:maxThreshold
+ for threshold=0:1:maxThreshold
     for y=1:h
         for x=1:w
             if(B(y,x) >= threshold)
@@ -72,7 +69,7 @@ title('ROC curve');
 xlabel('False Positive Rate');
 ylabel('True Positive Rate');
 
-figure, montage({segmentedImages(:,:,23),segmentedImages(:,:,24),segmentedImages(:,:,25),segmentedImages(:,:,26),groundTruth}, 'Size', [2 3]);
-title('Threshold 23, 24, 25, 26 and the Ground Truth');
+figure, montage({segmentedImages(:,:,round(maxThreshold/4)),segmentedImages(:,:,round(maxThreshold/3)),segmentedImages(:,:,round(maxThreshold/2)),segmentedImages(:,:,round(maxThreshold*2/3)),segmentedImages(:,:,round(maxThreshold*3/4)),groundTruth}, 'Size', [2 3]);
+title(['Threshold ', num2str(round(maxThreshold/4)),',', num2str(round(maxThreshold/3)),',', num2str(round(maxThreshold/2)),',', num2str(round(maxThreshold*2/3)),',', num2str(round(maxThreshold*3/4)), ' and the Ground Truth']);
 figure, montage({S, S0, I, A, B, groundTruth}, 'Size', [2 3]);
 title(['Using kSize = ', num2str(kSize), ' and resolution = ', num2str(resolution), ' degrees']); 
