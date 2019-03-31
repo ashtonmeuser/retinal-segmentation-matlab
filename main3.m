@@ -1,6 +1,6 @@
 clear;
 
-maxThreshold = 150;
+maxThreshold = 100;
 resolution = 15; % Line detector resolution in degrees
 kSize = 15; % Kernel size
 
@@ -82,11 +82,17 @@ segmentedImages = uint8(zeros([size(inverseGreen),maxThreshold+1]));
         bestThreshold = threshold; 
     end
  end
+
+ %calculate area under curve
+auc = 0.0;
+for binNum = size(TPrate):-1:2
+   auc = auc + ((FPrate(binNum-1)-FPrate(binNum))*TPrate(binNum)) + 0.5*((FPrate(binNum-1)-FPrate(binNum))*(TPrate(binNum-1)-TPrate(binNum)));
+end
+
 figure, plot(FPrate,TPrate);
-title('ROC curve');
+title(['ROC curve with AUC = ', num2str(auc)]);
 xlabel('False Positive Rate');
 ylabel('True Positive Rate');
-
 %[optimalResult, Tvalues] = BasicGlobalThreshold(B,0.1);
 
 figure, montage({segmentedImages(:,:,bestThreshold-9),segmentedImages(:,:,bestThreshold-4),segmentedImages(:,:,bestThreshold+6),segmentedImages(:,:,bestThreshold+11),segmentedImages(:,:,round(bestThreshold+1)),groundTruth}, 'Size', [2 3]);
