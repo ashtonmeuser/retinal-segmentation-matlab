@@ -4,13 +4,13 @@ maxThreshold = 100;
 resolution = 15; % Line detector resolution in degrees
 kSize = 15; % Kernel size
 
-lineWeight = 8; % Featurevector weightings
+lineWeight = 11; % Featurevector weightings
 orthogWeight = 7; 
-origWeight = 14;
+origWeight = 5;
 
-filename = '01_test.tif'; % Original image file path
-maskImage = '01_test_mask.gif'; % FOV mask image file path
-groundTruth = imread('01_manual1.gif')*255;
+filename = 'DRIVE/test/images/01_test.tif'; % Original image file path
+maskImage = 'DRIVE/test/mask/01_test_mask.gif'; % FOV mask image file path
+groundTruth = imread('DRIVE/test/1st_manual/01_manual1.gif')*255;
 
 original = imread(filename);
 FOVmask = imread(maskImage);
@@ -53,8 +53,10 @@ TPrate = zeros((maxThreshold)+1,1);
 FPrate = zeros((maxThreshold)+1,1);
 TNrate = zeros((maxThreshold)+1,1);
 accuracy = zeros((maxThreshold)+1,1);
-bestAccuracy = 0;
+precision = zeros((maxThreshold)+1,1);
+bestPrecision = 0;
 bestThreshold = 0;
+bestAccuracy = 0;
 bestRate = 0;
 bestScore = 0;
 
@@ -70,15 +72,18 @@ segmentedImages = uint8(zeros([size(inverseGreen),maxThreshold+1]));
             end
         end
     end
-    [TPrate(threshold+1), FPrate(threshold+1), TNrate(threshold+1), accuracy(threshold+1)] = evaluateImage(segmentedImages(:,:,threshold+1),groundTruth);
-    if (accuracy(threshold+1) > bestAccuracy)
-        bestAccuracy = accuracy(threshold+1);
+    [TPrate(threshold+1), FPrate(threshold+1), TNrate(threshold+1), accuracy(threshold+1), precision(threshold+1)] = evaluateImage(segmentedImages(:,:,threshold+1),groundTruth);
+    if (precision(threshold+1) > bestPrecision)
+        bestPrecision = precision(threshold+1);
     end
     if ((TPrate(threshold+1)*(TNrate(threshold+1))) > bestRate )
         bestRate = TPrate(threshold+1)*(TNrate(threshold+1));
     end
-    if ((accuracy(threshold+1)*TPrate(threshold+1)*(TNrate(threshold+1)) > bestScore))
-        bestScore = accuracy(threshold+1)*TPrate(threshold+1)*TNrate(threshold+1);
+    if (accuracy(threshold+1) > bestAccuracy)
+        bestAccuracy = accuracy(threshold+1);
+    end
+    if ((accuracy(threshold+1)*precision(threshold+1)*TPrate(threshold+1)*(TNrate(threshold+1)) > bestScore))
+        bestScore = accuracy(threshold+1)*precision(threshold+1)*TPrate(threshold+1)*TNrate(threshold+1);
         bestThreshold = threshold; 
     end
  end
@@ -95,7 +100,7 @@ xlabel('False Positive Rate');
 ylabel('True Positive Rate');
 %[optimalResult, Tvalues] = BasicGlobalThreshold(B,0.1);
 
-figure, montage({segmentedImages(:,:,bestThreshold-9),segmentedImages(:,:,bestThreshold-4),segmentedImages(:,:,bestThreshold+6),segmentedImages(:,:,bestThreshold+11),segmentedImages(:,:,round(bestThreshold+1)),groundTruth}, 'Size', [2 3]);
-title(['Threshold ',num2str(bestThreshold-9),', ', num2str(bestThreshold-4),', ', num2str(bestThreshold+6),', ', num2str(bestThreshold+11),', optimal threshold T = ',num2str(bestThreshold),' with ',num2str(uint8(accuracy(bestThreshold+1)*100)),'% precision , and the Ground Truth']);
+figure, montage({segmentedImages(:,:,round(bestThreshold-(bestThreshold*0.5))),segmentedImages(:,:,round(bestThreshold-(bestThreshold*0.25))),segmentedImages(:,:,round(bestThreshold+(bestThreshold*0.25))),segmentedImages(:,:,round(bestThreshold+(bestThreshold*0.5))),segmentedImages(:,:,round(bestThreshold+1)),groundTruth}, 'Size', [2 3]);
+title(['Threshold ',num2str(bestThreshold-9),', ', num2str(bestThreshold-4),', ', num2str(bestThreshold+6),', ', num2str(bestThreshold+11),', optimal threshold T = ',num2str(bestThreshold),' with ',num2str(accuracy(bestThreshold+1)*100),'% accuracy , and the Ground Truth']);
 figure, montage({uint8(A), uint8(B)}, 'Size', [1 2]);
 title('Images after adding the weighted vector scores, first using line scores, then adding the original pixel score'); 

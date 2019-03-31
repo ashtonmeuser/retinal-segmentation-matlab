@@ -4,17 +4,19 @@ maxThreshold = 100;
 resolution = 15; % Line detector resolution in degrees
 kSize = 15; % Kernel size
 
-lineWeight = 8; % Featurevector weightings
+lineWeight = 11; % Featurevector weightings
 orthogWeight = 7; 
-origWeight = 14;
+origWeight = 9;
 
 TPrate = zeros((maxThreshold)+1,20);
 FPrate = zeros((maxThreshold)+1,20);
 TNrate = zeros((maxThreshold)+1,20);
 accuracy = zeros((maxThreshold)+1,20);
+precision = zeros((maxThreshold)+1,20);
 
 bestSegment = zeros(584,565,20);
 bestAccuracy = zeros(1,20);
+bestPrecision = zeros(1,20);
 bestRate = zeros(1,20);
 bestScore = zeros(1,20);
 auc = zeros(1,20);
@@ -76,12 +78,15 @@ for driveSet = 1:20
                 end
             end
         end
-        [TPrate((threshold+1),driveSet), FPrate((threshold+1),driveSet), TNrate((threshold+1),driveSet), accuracy((threshold+1),driveSet)] = evaluateImage(segmentedImages(:,:,threshold+1),groundTruth);
+        [TPrate((threshold+1),driveSet), FPrate((threshold+1),driveSet), TNrate((threshold+1),driveSet), accuracy((threshold+1),driveSet), precision((threshold+1),driveSet)] = evaluateImage(segmentedImages(:,:,threshold+1),groundTruth);
         if (accuracy((threshold+1),driveSet) > bestAccuracy(driveSet))
             bestAccuracy(driveSet) = accuracy((threshold+1),driveSet);
         end
         if ((TPrate((threshold+1),driveSet))*(TNrate((threshold+1),driveSet)) > bestRate(driveSet) )
             bestRate(driveSet) = TPrate((threshold+1),driveSet)*(TNrate((threshold+1),driveSet));
+        end
+        if (accuracy((threshold+1),driveSet) > bestAccuracy(driveSet))
+            bestAccuracy(driveSet) = accuracy((threshold+1),driveSet);
         end
         if ((accuracy((threshold+1),driveSet)*TPrate((threshold+1),driveSet)*TNrate((threshold+1),driveSet)) > bestScore(driveSet))
             bestScore(driveSet) = accuracy((threshold+1),driveSet)*TPrate((threshold+1),driveSet)*TNrate((threshold+1),driveSet);
