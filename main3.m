@@ -1,12 +1,12 @@
 clear;
 
-maxThreshold = 50;
+maxThreshold = 150;
 resolution = 15; % Line detector resolution in degrees
 kSize = 15; % Kernel size
 
-lineWeight = 10; % Featurevector weightings
-orthogWeight = 5; 
-origWeight = 10;
+lineWeight = 8; % Featurevector weightings
+orthogWeight = 7; 
+origWeight = 14;
 
 filename = '01_test.tif'; % Original image file path
 maskImage = '01_test_mask.gif'; % FOV mask image file path
@@ -34,10 +34,10 @@ SDOrthogScore = std2(result1(:,:,2));
 meanOrigScore = mean2(result1(:,:,3));
 SDOrigScore = std2(result1(:,:,3));
 
-result2(:,:,1) = (double(result1(:,:,1)) - meanLineScore) .* (1/SDLineScore);
-result2(:,:,2) = (double(result1(:,:,2)) - meanOrthogScore) .* (1/SDOrthogScore);
-result2(:,:,3) = (double(result1(:,:,3))  - meanOrigScore) .* (1/SDOrigScore);
-result2(result2 < 0) = 0; % adjust for negative results
+result2(:,:,1) = (double(result1(:,:,1)) - meanLineScore) ./ SDLineScore;
+result2(:,:,2) = (double(result1(:,:,2)) - meanOrthogScore) ./ SDOrthogScore;
+result2(:,:,3) = (double(result1(:,:,3))  - meanOrigScore) ./ SDOrigScore;
+%result2(result2 < 0) = 0; % adjust for negative results
 
 S = result2(:,:,1); % the 'kSize' LineScore
 S0 = result2(:,:,2); % the 3pxl orthogonal LineScore
@@ -45,6 +45,7 @@ I = result2(:,:,3); % the greyscale Score
     
 A = S.*lineWeight + S0.*orthogWeight; % add the scores together with the vector weightings
 B = A + (I.*origWeight);
+B(B < 0) = 0; %adjust for negative scores
 
 [h, w] = size(B);
 
@@ -57,7 +58,7 @@ bestThreshold = 0;
 bestRate = 0;
 bestScore = 0;
 
-segmentedImages = uint8(zeros([size(inverseGreen),(maxThreshold*10)+1]));
+segmentedImages = uint8(zeros([size(inverseGreen),maxThreshold+1]));
 % build up true positive and false positive rates for ROC curve
  for threshold=0:maxThreshold
     for y=1:h
@@ -88,7 +89,7 @@ ylabel('True Positive Rate');
 
 %[optimalResult, Tvalues] = BasicGlobalThreshold(B,0.1);
 
-figure, montage({segmentedImages(:,:,round(maxThreshold/3)),segmentedImages(:,:,round(maxThreshold/2)),segmentedImages(:,:,round(maxThreshold*2/3)),segmentedImages(:,:,round(maxThreshold*3/4)),segmentedImages(:,:,round(bestThreshold+1)),groundTruth}, 'Size', [2 3]);
-title(['Threshold ',num2str(round(maxThreshold/3)),', ', num2str(round(maxThreshold/2)),', ', num2str(round(maxThreshold*2/3)),', ', num2str(round(maxThreshold*3/4)),', optimal threshold T = ',num2str(bestThreshold),' with ',num2str(uint8(accuracy(bestThreshold+1)*100)),'% precision , and the Ground Truth']);
+figure, montage({segmentedImages(:,:,bestThreshold-9),segmentedImages(:,:,bestThreshold-4),segmentedImages(:,:,bestThreshold+6),segmentedImages(:,:,bestThreshold+11),segmentedImages(:,:,round(bestThreshold+1)),groundTruth}, 'Size', [2 3]);
+title(['Threshold ',num2str(bestThreshold-9),', ', num2str(bestThreshold-4),', ', num2str(bestThreshold+6),', ', num2str(bestThreshold+11),', optimal threshold T = ',num2str(bestThreshold),' with ',num2str(uint8(accuracy(bestThreshold+1)*100)),'% precision , and the Ground Truth']);
 figure, montage({uint8(A), uint8(B)}, 'Size', [1 2]);
 title('Images after adding the weighted vector scores, first using line scores, then adding the original pixel score'); 
