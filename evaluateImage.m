@@ -1,4 +1,4 @@
-function [TPrate, FPrate] = evaluateImage(segImage, truthImage)
+function [TPrate, FPrate, TNrate, accuracy ] = evaluateImage(segImage, truthImage)
 % returns the number of true positives between a segmented
 % image and the ground truth image
 
@@ -23,6 +23,7 @@ for y = 1:h
     end
 end
 
-TPrate = TP/(TP+FN);
-TNrate = TN/(TN+FP);
+TPrate = TP/(TP+FN); % aka sensitivity aka recall
+TNrate = TN/(TN+FP); % aka specificity
 FPrate = 1 - TNrate;
+accuracy = TP/(TP+FP);% aka precision
