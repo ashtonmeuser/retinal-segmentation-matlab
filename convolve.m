@@ -4,7 +4,7 @@ function [output] = convolve(image, kSize, features, func)
 [h, w] = size(image);
 padSize = floor(kSize / 2);
 image = pad(image, padSize, 255);
-output = zeros(h, w, features, 'uint8');
+output = zeros(h, w, features, 'double');
 
 for y = padSize + 1:h + padSize
     for x = padSize + 1:w + padSize

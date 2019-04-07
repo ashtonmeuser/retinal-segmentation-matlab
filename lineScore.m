@@ -2,7 +2,7 @@ function [output] = lineScore(neighborhood, lineMasks)
 % Assign score to neighborhood based on best fitting line
 
 steps = size(lineMasks, 4);
-scores = zeros(steps, 2, 'uint8');
+scores = zeros(steps, 2, 'double');
 kSize = size(lineMasks, 1);
 center = ceil(kSize / 2);
 orthogonalLength = nnz(lineMasks(:, :, 2, 1));
