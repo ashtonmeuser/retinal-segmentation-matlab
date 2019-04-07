@@ -18,7 +18,9 @@ func = @(n) lineScore(n, lineMasks); % Anonymous fn called by convolution
 vectors = convolve(masked, kSize, 2, func); % First, second feature vectors
 vectors(:, :, 3) = rgb2gray(original); % Third feature vector
 normalized = normalizeVectors(vectors);
-prediction = thresholdVectors(normalized, weights, 0.06);
-assess(truth, prediction);
+
+plotRocCurve(normalized, weights, truth); % Range of threshold values
+prediction = thresholdVectors(normalized, weights, 0.06); % Using nominal threshold value
+assess(truth, prediction, true); % Assess performance of nominal threshold value
 
 imwrite(prediction, 'prediction.png');
