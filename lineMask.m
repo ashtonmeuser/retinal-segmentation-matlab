@@ -19,8 +19,8 @@ output(1:quarterSize, quarterSize:kSize) = quarter; % Q1
 output(quarterSize:kSize, 1:quarterSize) = rot90(quarter, 2); % Q3
 
 centerMask = zeros(kSize, kSize, 'logical');
-centerMask(quarterSize - orthogonalRadius:quarterSize + orthogonalRadius, quarterSize - orthogonalRadius:quarterSize + orthogonalRadius);
-output(:, :, 2) = rot90(output, 2) * centerMask;
+centerMask(quarterSize - orthogonalRadius:quarterSize + orthogonalRadius, quarterSize - orthogonalRadius:quarterSize + orthogonalRadius) = true;
+output(:, :, 2) = rot90(output) .* centerMask;
 
 % Account for angles greater than 45 degrees
 if angle > 45 && angle <= 135
