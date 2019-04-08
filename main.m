@@ -16,7 +16,7 @@ masked = inverseGreen .* uint8(fovMask);
 lineMasks = generateMaskArray(kSize, resolution, orthogonalLength);
 func = @(n) lineScore(n, lineMasks); % Anonymous fn called by convolution
 vectors = convolve(masked, kSize, 2, func); % First, second feature vectors
-vectors(:, :, 3) = rgb2gray(original); % Third feature vector
+vectors(:, :, 3) = masked; % Third feature vector
 normalized = normalizeVectors(vectors);
 
 plotRocCurve(normalized, weights, truth); % Range of threshold values
