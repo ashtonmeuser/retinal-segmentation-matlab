@@ -6,7 +6,7 @@ orthogonalLength = 3; % Length of orthogonal line score
 originalFilename = 'DRIVE/image/01.tif'; % Original image file path
 fovMaskFilename = 'DRIVE/mask/01.gif'; % Image mask file path
 truthFilename = 'DRIVE/truth/01.gif'; % Manual segmentation file path
-weights = [1 1 0]; % Weights for features (line, orthogonal, greyscale)
+weights = [1 5 10]; % Weights for features (line, orthogonal, greyscale)
 
 original = imread(originalFilename);
 fovMask = logical(imread(fovMaskFilename));
