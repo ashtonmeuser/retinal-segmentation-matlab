@@ -6,7 +6,7 @@ orthogonalLength = 3; % Length of orthogonal line score
 originalFilename = 'DRIVE/image/01.tif'; % Original image file path
 fovMaskFilename = 'DRIVE/mask/01.gif'; % Image mask file path
 truthFilename = 'DRIVE/truth/01.gif'; % Manual segmentation file path
-weights = [1 5 10]; % Weights for features (line, orthogonal, greyscale)
+weights = [2 3 10]; % Weights for features (line, orthogonal, greyscale)
 
 original = imread(originalFilename);
 fovMask = logical(imread(fovMaskFilename));
@@ -20,7 +20,7 @@ vectors(:, :, 3) = masked; % Third feature vector
 normalized = normalizeVectors(vectors);
 
 plotRocCurve(normalized, weights, truth); % Range of threshold values
-prediction = thresholdVectors(normalized, weights, 0.06); % Using nominal threshold value
+prediction = thresholdVectors(normalized, weights, 0.125); % Using nominal threshold value
 assess(truth, prediction, true); % Assess performance of nominal threshold value
 
 imwrite(prediction, 'prediction.png');
