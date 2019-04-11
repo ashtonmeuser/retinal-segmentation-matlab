@@ -5,7 +5,8 @@ steps = 255;
 performance = zeros(steps + 2, 2, 'double');
 
 for index = 1:steps + 2
-    prediction = thresholdVectors(vectors, weights, ((index - 2) / steps));
+    threshold = (index - 2) / steps; % Range from threshold < 0.0 to threshold >= 1.0
+    prediction = thresholdVectors(vectors, weights, threshold);
     [truePositiveRate, falsePositiveRate] = assess(truth, prediction, false);
     performance(index, :) = [truePositiveRate, falsePositiveRate];
 end
